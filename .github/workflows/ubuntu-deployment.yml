@@ -1,0 +1,46 @@
+name: Deploy Gatsby Application on Unbuntu Server
+
+on:
+  push:
+    branches: ["main"]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the Repo
+        uses: actions/checkout@v3
+
+      - name: Install Node.Js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'npm'
+      
+      - name: Install Gatsby cli
+        run: npm install --location=global gatsby-cli
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Gatsby Project
+        run: gatsby build
+      
+      - name: Verify the Public Folder
+        run: ls -la public
+
+      - name: Copy the Public Folder
+        uses: marcodallasanta/ssh-scp-deploy@v1.2.0
+        with:
+          local: 'public'
+          remote: '~/public'
+          host: ${{secrets.HOST}}
+          user: ${{secrets.USER}}
+          key: ${{secrets.KEY
+          ssh_options: -o StrictHostKeyChecking=no
+          pre_upload: sudo rm -rf /var/www/html/*
+          post_upload: ls -la ~/public
+          #post_upload: sudo mv ~/public/*
+
