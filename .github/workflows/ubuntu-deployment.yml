@@ -41,6 +41,6 @@ jobs:
           key: ${{secrets.KEY}}
           ssh_options: -o StrictHostKeyChecking=no
           pre_upload: sudo rm -rf /var/www/html/*
-          post_upload: ls -la ~/public
+          post_upload: sudo mv ~/public/* /var/www/html/
           #post_upload: sudo mv ~/public/*
 
